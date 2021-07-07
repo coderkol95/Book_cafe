@@ -16,7 +16,7 @@ from sklearn import feature_selection
 
 def prepare():
     
-    dataf = pd.read_csv(r"C:/Users/Anupam/Downloads/Books_with_coffee.csv")
+    dataf = pd.read_csv(r"./books.csv")
     dataf.columns = ["Timestamp", "Format", "Beverage", "Music","Target", "Frequency","Connect","Variety"]
     dataf["VarCount"] = dataf.Variety.apply(lambda stri: len(stri.split(",")))   #Count of variety of books read by people
     format_count = dataf.groupby('Format')['Format'].count()
@@ -64,9 +64,6 @@ def postprocess(dataf):
 
     return dataf, genres, pphc, d, bv
 
-
-
-
 def plot2(dataf, genres):
     fig,ax=plt.subplots(nrows=1, ncols=2,figsize=(20,8))
     genres.plot(kind='barh', color="dodgerblue", ax=ax[0])
@@ -79,7 +76,6 @@ def plot2(dataf, genres):
     ax[1].set_ylabel('No. of books read by the reader in the last six months')    
     #ax[0].axhline(genres.mean(), color='red')  
     #ax[0].text(40,genres.mean()+0.5,"Mean", fontsize=18) 
-
 
 def plot3(pphc,d):
     plt.figure(figsize=(20,8))
@@ -95,8 +91,6 @@ def plot3(pphc,d):
     plt.tight_layout()
     plt.show()
 
- 
-
 def plot4(bv):
     # To plot the waffle Chart 
     fig = plt.figure(FigureClass = Waffle, rows = 3, values = bv. Count, labels = list(bv.index) , figsize=(20,8))
@@ -108,7 +102,6 @@ def plot5(dataf):
     x.columns=['Count']
     fig = plt.figure(FigureClass = Waffle, rows = 1, values = x.Count, labels = list(x.index) , figsize=(20,4))
     plt.title('Interest to meet fellow book readers among people who do not drink while reading')     
-
 
 def plot6(dmod):
     dmod.Beverage.replace({'I do not drink but I know things':'No drink required','None':'No drink required','No drink necessary':'No drink required','I drink but not with books':'No drink required','Depends upon mood and time of day':'No drink required','There is no connection between books and beverage':'No drink required'},inplace=True)
@@ -148,7 +141,26 @@ def plot7(dframe):
     sns.barplot(sc.Score, sc.Feature, color='seagreen')
     plt.title('Feature importance among people wanting to read books without buying')
 
+def modeller(dmod):
 
+    dmod['Genre_Fiction'] = dmod.Variety.apply(lambda x:'Fiction' in x).astype('int')
+    dmod['Genre_Science fiction'] = dmod.Variety.apply(lambda x:'Science fiction' in x).astype('int')
+    dmod['Genre_Humour'] = dmod.Variety.apply(lambda x:'Humour' in x).astype('int')
+    dmod['Genre_Philosophy'] = dmod.Variety.apply(lambda x:'Philosophy' in x).astype('int')
+    dmod['Genre_History'] = dmod.Variety.apply(lambda x:'History' in x).astype('int')
+    dmod['Genre_Business'] = dmod.Variety.apply(lambda x:'Business' in x).astype('int')
+    dmod['Genre_Literature'] = dmod.Variety.apply(lambda x:'Literature' in x).astype('int')
+    dmod['Genre_Biography'] = dmod.Variety.apply(lambda x:'Biography' in x).astype('int')
+    dmod['Genre_Travel'] = dmod.Variety.apply(lambda x:'Travel' in x).astype('int')
+    dmod['Genre_Religion'] = dmod.Variety.apply(lambda x:'Religion' in x).astype('int')
+    y = dmod.Target
+    dmod.Beverage.replace({'Alcohol':'No drink required','Juice':'No drink required'}, inplace=True)
+    dmod =pd.concat([dmod,pd.get_dummies(dmod.Format, drop_first=True,prefix='Format_'),pd.get_dummies(dmod.Beverage, prefix='Beverage_', drop_first=True),
+    pd.get_dummies(dmod.Music, prefix='Music_', drop_first=True), pd.get_dummies(dmod.Connect, prefix='Connect', drop_first=True)],axis=1) 
+    X=dmod.drop(['Timestamp','Variety','Format','Connect','Beverage','Music','Target'],axis=1)
+    y=y.replace({'I wish I could read them without buying a lot of books':1 , 'I want to build a library duh!':0})
+    return X,y
+    
 def get_palette(pal,n):
     a=[]
     cmap = cm.get_cmap(pal, n)    # PiYG
