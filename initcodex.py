@@ -143,20 +143,20 @@ def plot7(dframe):
 
 def modeller(dmod):
 
-    dmod['Genre_Fiction'] = dmod.Variety.apply(lambda x:'Fiction' in x).astype('int')
-    dmod['Genre_Science fiction'] = dmod.Variety.apply(lambda x:'Science fiction' in x).astype('int')
-    dmod['Genre_Humour'] = dmod.Variety.apply(lambda x:'Humour' in x).astype('int')
-    dmod['Genre_Philosophy'] = dmod.Variety.apply(lambda x:'Philosophy' in x).astype('int')
-    dmod['Genre_History'] = dmod.Variety.apply(lambda x:'History' in x).astype('int')
-    dmod['Genre_Business'] = dmod.Variety.apply(lambda x:'Business' in x).astype('int')
-    dmod['Genre_Literature'] = dmod.Variety.apply(lambda x:'Literature' in x).astype('int')
-    dmod['Genre_Biography'] = dmod.Variety.apply(lambda x:'Biography' in x).astype('int')
-    dmod['Genre_Travel'] = dmod.Variety.apply(lambda x:'Travel' in x).astype('int')
-    dmod['Genre_Religion'] = dmod.Variety.apply(lambda x:'Religion' in x).astype('int')
+    dmod['Fiction'] = dmod.Variety.apply(lambda x:'Fiction' in x).astype('int')
+    dmod['Science fiction'] = dmod.Variety.apply(lambda x:'Science fiction' in x).astype('int')
+    dmod['Humour'] = dmod.Variety.apply(lambda x:'Humour' in x).astype('int')
+    dmod['Philosophy'] = dmod.Variety.apply(lambda x:'Philosophy' in x).astype('int')
+    dmod['History'] = dmod.Variety.apply(lambda x:'History' in x).astype('int')
+    dmod['Business'] = dmod.Variety.apply(lambda x:'Business' in x).astype('int')
+    dmod['Literature'] = dmod.Variety.apply(lambda x:'Literature' in x).astype('int')
+    dmod['Biography'] = dmod.Variety.apply(lambda x:'Biography' in x).astype('int')
+    dmod['Travel'] = dmod.Variety.apply(lambda x:'Travel' in x).astype('int')
+    dmod['Religion'] = dmod.Variety.apply(lambda x:'Religion' in x).astype('int')
     y = dmod.Target
     dmod.Beverage.replace({'Alcohol':'No drink required','Juice':'No drink required'}, inplace=True)
-    dmod =pd.concat([dmod,pd.get_dummies(dmod.Format, drop_first=True,prefix='Format_'),pd.get_dummies(dmod.Beverage, prefix='Beverage_', drop_first=True),
-    pd.get_dummies(dmod.Music, prefix='Music_', drop_first=True), pd.get_dummies(dmod.Connect, prefix='Connect', drop_first=True)],axis=1) 
+    dmod =pd.concat([dmod,pd.get_dummies(dmod.Format, drop_first=True),pd.get_dummies(dmod.Beverage, prefix='Beverage_', drop_first=True),
+    pd.get_dummies(dmod.Music, drop_first=True), pd.get_dummies(dmod.Connect, prefix='Connect', drop_first=True)],axis=1) 
     X=dmod.drop(['Timestamp','Variety','Format','Connect','Beverage','Music','Target'],axis=1)
     y=y.replace({'I wish I could read them without buying a lot of books':1 , 'I want to build a library duh!':0})
     return X,y
